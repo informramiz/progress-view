@@ -90,6 +90,13 @@ class ProgressView @JvmOverloads constructor(
             }
 
             progress = typedArray.getFloat(R.styleable.ProgressView_progressView_progress, 0f)
+            typedArray.getColor(R.styleable.ProgressView_progressView_normal_state_color, DEFAULT_NORMAL_COLOR).let {
+                normalCirclePaint.color = it
+                normalLinePaint.color = it
+            }
+            typedArray.getColor(R.styleable.ProgressView_progressView_progress_state_color, DEFAULT_PROGRESS_COLOR).let {
+                progressPaint.color = it
+            }
         } catch (e: Exception) {
             e.printStackTrace()
             typedArray.recycle()
