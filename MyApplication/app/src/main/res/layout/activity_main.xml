@@ -8,8 +8,8 @@
         tools:context=".MainActivity">
 
     <io.informramiz.myapplication.ProgressView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="150dp"
+            android:layout_height="100dp"
             android:layout_gravity="center"/>
 
 </FrameLayout>

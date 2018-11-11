@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
-import android.graphics.Point
 import android.support.annotation.DimenRes
 import android.util.AttributeSet
 import android.view.View
@@ -55,62 +54,64 @@ class ProgressView @JvmOverloads constructor(
     override fun onDraw(canvas: Canvas) {
         //draw start circle
         val startCircleCenter = getStartCircleCenter()
-        canvas.drawCircleInt(startCircleCenter.x, startCircleCenter.y, circleRadius, getFirstCirclePaint())
+        canvas.drawCircle(startCircleCenter.x, startCircleCenter.y, circleRadius, getFirstCirclePaint())
 
         //draw end circle
         val endCircleCenter = getEndCircleCenter()
-        canvas.drawCircleInt(endCircleCenter.x, endCircleCenter.y, circleRadius, getSecondCirclePaint())
+        canvas.drawCircle(endCircleCenter.x, endCircleCenter.y, circleRadius, getSecondCirclePaint())
 
 
         //draw normal line
         val lineStartPoint = getLineStartPoint()
         val lineEndPoint = getLineEndPoint()
-        canvas.drawLineInt(lineStartPoint.x, lineStartPoint.y, lineEndPoint.x, lineEndPoint.y, normalPaint)
+        canvas.drawLine(lineStartPoint.x, lineStartPoint.y, lineEndPoint.x, lineEndPoint.y, normalPaint)
 
         //draw progress line
         if (progress > 0f) {
-            val progressLineEndPoint = getProgressEndPoint()
-            canvas.drawLineInt(lineStartPoint.x, lineStartPoint.y, progressLineEndPoint.x, progressLineEndPoint.y, progressPaint)
+            val lineWidth = Math.abs(lineEndPoint.x - lineStartPoint.x)
+            val lineHeight = Math.abs(lineEndPoint.y - lineStartPoint.y)
+            val progressLineEndPoint = getProgressEndPoint(lineWidth, lineHeight)
+            canvas.drawLine(lineStartPoint.x, lineStartPoint.y, progressLineEndPoint.x, progressLineEndPoint.y, progressPaint)
         }
     }
 
-    private fun getProgressEndPoint(): Point {
+    private fun getProgressEndPoint(lineWidth: Float, lineHeight: Float): PointF {
         return when (orientation) {
-            Orientation.HORIZONTAL -> Point(((width - 2 * circleSize()) * progress).toInt(), viewVerticalCenter())
-            else -> Point(viewHorizontalCenter(), ((height - 2 * circleSize()) * progress).toInt())
+            Orientation.HORIZONTAL -> PointF(lineWidth * progress + circleSize(), viewVerticalCenter())
+            else -> PointF(viewHorizontalCenter(), lineHeight * progress + circleSize())
         }
     }
 
-    private fun circleSize() = (circleRadius * 2).toInt()
+    private fun circleSize() = (circleRadius * 2)
 
     private fun viewHorizontalCenter() = width / 2
     private fun viewVerticalCenter() = height / 2
 
-    private fun getStartCircleCenter(): Point {
+    private fun getStartCircleCenter(): PointF {
         return when (orientation) {
-            Orientation.HORIZONTAL -> Point(circleRadius.toInt(), viewVerticalCenter())
-            else -> Point(viewHorizontalCenter(), circleRadius.toInt())
+            Orientation.HORIZONTAL -> PointF(circleRadius, viewVerticalCenter())
+            else -> PointF(viewHorizontalCenter(), circleRadius)
         }
     }
 
-    private fun getEndCircleCenter(): Point {
+    private fun getEndCircleCenter(): PointF {
         return when (orientation) {
-            Orientation.HORIZONTAL -> Point(width - circleRadius.toInt(), viewVerticalCenter())
-            else -> Point(viewHorizontalCenter(), height - circleRadius.toInt())
+            Orientation.HORIZONTAL -> PointF(width - circleRadius, viewVerticalCenter())
+            else -> PointF(viewHorizontalCenter(), height - circleRadius)
         }
     }
 
-    private fun getLineStartPoint(): Point {
+    private fun getLineStartPoint(): PointF {
         return when (orientation) {
-            Orientation.HORIZONTAL -> Point(circleSize(), viewVerticalCenter())
-            else -> Point(viewHorizontalCenter(), circleSize())
+            Orientation.HORIZONTAL -> PointF(circleSize(), viewVerticalCenter())
+            else -> PointF(viewHorizontalCenter(), circleSize())
         }
     }
 
-    private fun getLineEndPoint(): Point {
+    private fun getLineEndPoint(): PointF {
         return when (orientation) {
-            Orientation.HORIZONTAL -> Point(width - circleSize(), viewVerticalCenter())
-            else -> Point(viewHorizontalCenter(), height - circleSize())
+            Orientation.HORIZONTAL -> PointF(width - circleSize(), viewVerticalCenter())
+            else -> PointF(viewHorizontalCenter(), height - circleSize())
         }
     }
 
@@ -123,10 +124,6 @@ class ProgressView @JvmOverloads constructor(
     }
 }
 
-private fun Canvas.drawLineInt(startX: Int, startY: Int, endX: Int, endY: Int, paint: Paint) {
-    drawLine(startX.toFloat(), startY.toFloat(), endX.toFloat(), endY.toFloat(), paint)
-}
-
-private fun Canvas.drawCircleInt(cx: Int, cy: Int, circleRadius: Float, paint: Paint) {
-    drawCircle(cx.toFloat(), cy.toFloat(), circleRadius, paint)
+data class PointF(var x: Float, var y: Float) {
+    constructor(x: Number, y: Number) : this(x.toFloat(), y.toFloat())
 }
