@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="circle_radius">14dp</dimen>
+    <dimen name="circle_radius">10dp</dimen>
     <dimen name="line_thickness_normal">1dp</dimen>
     <dimen name="line_thickness_progress">4dp</dimen>
 </resources>
