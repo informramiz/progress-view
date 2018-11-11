@@ -135,14 +135,14 @@ class ProgressView @JvmOverloads constructor(
     private fun getStartCircleCenter(): PointF {
         return when (orientation) {
             Orientation.HORIZONTAL -> PointF(circleRadius + VIEW_PADDING, viewVerticalCenter())
-            else -> PointF(viewHorizontalCenter(), circleRadius)
+            else -> PointF(viewHorizontalCenter(), circleRadius + VIEW_PADDING)
         }
     }
 
     private fun getEndCircleCenter(): PointF {
         return when (orientation) {
             Orientation.HORIZONTAL -> PointF(width - circleRadius - VIEW_PADDING, viewVerticalCenter())
-            else -> PointF(viewHorizontalCenter(), height - circleRadius)
+            else -> PointF(viewHorizontalCenter(), height - circleRadius - VIEW_PADDING)
         }
     }
 
