@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="ProgressView">
+        <attr name="progressView_normal_line_thickness" format="dimension"/>
+        <attr name="progressView_progress_line_thickness" format="dimension"/>
+        <attr name="progressView_circle_radius" format="dimension"/>
+        <attr name="progressView_normal_state_color" format="color"/>
+        <attr name="progressView_progress_state_color" format="color"/>
+        <attr name="progressView_orientation" format="enum">
+            <enum name="horizontal" value="0"/>
+            <enum name="vertical" value="1"/>
+        </attr>
+        <attr name="progressView_progress" format="float"/>
+    </declare-styleable>
+</resources>

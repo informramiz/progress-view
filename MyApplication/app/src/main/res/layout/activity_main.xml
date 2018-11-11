@@ -10,6 +10,13 @@
     <io.informramiz.myapplication.ProgressView
             android:layout_width="150dp"
             android:layout_height="100dp"
-            android:layout_gravity="center"/>
+            android:layout_gravity="center"
+            app:progressView_circle_radius="@dimen/circle_radius"
+            app:progressView_normal_line_thickness="@dimen/line_thickness_normal"
+            app:progressView_progress_line_thickness="@dimen/line_thickness_progress"
+            app:progressView_orientation="vertical"
+            app:progressView_progress="0.7"
+            app:progressView_normal_state_color="@color/colorPrimary"
+            app:progressView_progress_state_color="@color/colorAccent"/>
 
 </FrameLayout>

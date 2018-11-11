@@ -16,9 +16,9 @@ import android.view.View
 class ProgressView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
-    enum class Orientation {
-        HORIZONTAL,
-        VERTICAL
+    enum class Orientation(val value: Int) {
+        HORIZONTAL(0),
+        VERTICAL(1)
     }
 
     companion object {
@@ -31,7 +31,7 @@ class ProgressView @JvmOverloads constructor(
         private const val VIEW_PADDING = 1
     }
 
-    private val normalPaint = Paint().apply {
+    private val normalLinePaint = Paint().apply {
         flags = Paint.ANTI_ALIAS_FLAG
         style = Paint.Style.FILL
         strokeWidth = DEFAULT_NORMAL_LINE_THICKNESS
@@ -55,7 +55,46 @@ class ProgressView @JvmOverloads constructor(
 
     private var circleRadius = DEFAULT_CIRCLE_RADIUS
     private var orientation: Orientation = Orientation.HORIZONTAL
-    private var progress = 1f
+    private var progress = 0f
+
+    init {
+        extractAttributes(attrs)
+    }
+
+    private fun extractAttributes(attrs: AttributeSet?) {
+        attrs ?: return
+
+        val typedArray = context.obtainStyledAttributes(attrs, R.styleable.ProgressView)
+        try {
+            circleRadius =
+                    typedArray.getDimension(R.styleable.ProgressView_progressView_circle_radius, DEFAULT_CIRCLE_RADIUS)
+            val orientationValue = typedArray.getInt(
+                    R.styleable.ProgressView_progressView_orientation,
+                    Orientation.HORIZONTAL.value
+            )
+            orientation = Orientation.values().first { it.value == orientationValue }
+
+            typedArray.getDimension(
+                R.styleable.ProgressView_progressView_normal_line_thickness,
+                DEFAULT_NORMAL_LINE_THICKNESS
+            ).let {
+                normalCirclePaint.strokeWidth = it
+                normalLinePaint.strokeWidth = it
+            }
+
+            typedArray.getDimension(
+                R.styleable.ProgressView_progressView_progress_line_thickness,
+                DEFAULT_PROGRESS_LINE_THICKNESS
+            ).let {
+                progressPaint.strokeWidth = it
+            }
+
+            progress = typedArray.getFloat(R.styleable.ProgressView_progressView_progress, 0f)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            typedArray.recycle()
+        }
+    }
 
     override fun onDraw(canvas: Canvas) {
         //draw start circle
@@ -70,7 +109,7 @@ class ProgressView @JvmOverloads constructor(
         //draw normal line
         val lineStartPoint = getLineStartPoint()
         val lineEndPoint = getLineEndPoint()
-        canvas.drawLine(lineStartPoint.x, lineStartPoint.y, lineEndPoint.x, lineEndPoint.y, normalPaint)
+        canvas.drawLine(lineStartPoint.x, lineStartPoint.y, lineEndPoint.x, lineEndPoint.y, normalLinePaint)
 
         //draw progress line
         if (progress > 0f) {
