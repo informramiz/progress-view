@@ -1,6 +1,7 @@
 package io.informramiz.myapplication
 
 import android.content.Context
+import android.content.res.Resources
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
@@ -12,44 +13,49 @@ import android.view.View
 /**
  * Created by Ramiz Raja on 11/11/2018.
  */
-fun Context.getDimension(@DimenRes dimen: Int) = resources.getDimension(dimen)
-
-
 class ProgressView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
-
     enum class Orientation {
         HORIZONTAL,
         VERTICAL
     }
 
-    private val normalStrokeWidth = context.getDimension(R.dimen.line_thickness_normal)
-    private val progressStrokeWidth = context.getDimension(R.dimen.line_thickness_progress)
-    private var progress = 0.5f
-    private var circleRadius = context.getDimension(R.dimen.circle_radius)
-    private var orientation: Orientation = Orientation.HORIZONTAL
+    companion object {
+        private val DEFAULT_NORMAL_LINE_THICKNESS = 1.toPx().toFloat()
+        private val DEFAULT_PROGRESS_LINE_THICKNESS = 4.toPx().toFloat()
+        private val DEFAULT_CIRCLE_RADIUS = 10.toPx().toFloat()
+        private const val DEFAULT_NORMAL_COLOR = Color.GRAY
+        private const val DEFAULT_PROGRESS_COLOR = Color.BLUE
+
+        private const val VIEW_PADDING = 1
+    }
 
     private val normalPaint = Paint().apply {
         flags = Paint.ANTI_ALIAS_FLAG
         style = Paint.Style.FILL
-        strokeWidth = normalStrokeWidth
-        color = Color.GRAY
+        strokeWidth = DEFAULT_NORMAL_LINE_THICKNESS
+        color = DEFAULT_NORMAL_COLOR
     }
 
     private val progressPaint = Paint().apply {
         flags = Paint.ANTI_ALIAS_FLAG
         style = Paint.Style.FILL
-        strokeWidth = progressStrokeWidth
-        color = Color.BLUE
+        strokeWidth = DEFAULT_PROGRESS_LINE_THICKNESS
+        color = DEFAULT_PROGRESS_COLOR
     }
 
-    private val circlePaint = Paint().apply {
+    private val normalCirclePaint = Paint().apply {
         flags = Paint.ANTI_ALIAS_FLAG
         style = Paint.Style.STROKE
-        strokeWidth = normalStrokeWidth
-        color = Color.GRAY
+        strokeWidth = DEFAULT_NORMAL_LINE_THICKNESS
+        color = DEFAULT_NORMAL_COLOR
     }
+
+
+    private var circleRadius = DEFAULT_CIRCLE_RADIUS
+    private var orientation: Orientation = Orientation.HORIZONTAL
+    private var progress = 1f
 
     override fun onDraw(canvas: Canvas) {
         //draw start circle
@@ -82,21 +88,21 @@ class ProgressView @JvmOverloads constructor(
         }
     }
 
-    private fun circleSize() = (circleRadius * 2)
+    private fun circleSize() = (circleRadius * 2) + VIEW_PADDING
 
     private fun viewHorizontalCenter() = width / 2
     private fun viewVerticalCenter() = height / 2
 
     private fun getStartCircleCenter(): PointF {
         return when (orientation) {
-            Orientation.HORIZONTAL -> PointF(circleRadius, viewVerticalCenter())
+            Orientation.HORIZONTAL -> PointF(circleRadius + VIEW_PADDING, viewVerticalCenter())
             else -> PointF(viewHorizontalCenter(), circleRadius)
         }
     }
 
     private fun getEndCircleCenter(): PointF {
         return when (orientation) {
-            Orientation.HORIZONTAL -> PointF(width - circleRadius - 1, viewVerticalCenter())
+            Orientation.HORIZONTAL -> PointF(width - circleRadius - VIEW_PADDING, viewVerticalCenter())
             else -> PointF(viewHorizontalCenter(), height - circleRadius)
         }
     }
@@ -116,14 +122,24 @@ class ProgressView @JvmOverloads constructor(
     }
 
     private fun getFirstCirclePaint(): Paint {
-        return if (progress == 0f) circlePaint else progressPaint
+        return if (progress == 0f) normalCirclePaint else progressPaint
     }
 
     private fun getSecondCirclePaint(): Paint {
-        return if (progress == 1f) progressPaint else circlePaint
+        return if (progress == 1f) progressPaint else normalCirclePaint
     }
 }
 
 data class PointF(var x: Float, var y: Float) {
     constructor(x: Number, y: Number) : this(x.toFloat(), y.toFloat())
+}
+
+fun Context.getDimension(@DimenRes dimen: Int) = resources.getDimension(dimen)
+
+fun Int.toPx(): Int {
+    return this * Resources.getSystem().displayMetrics.density.toInt()
+}
+
+fun Int.toDp(): Int {
+    return this / Resources.getSystem().displayMetrics.density.toInt()
 }
