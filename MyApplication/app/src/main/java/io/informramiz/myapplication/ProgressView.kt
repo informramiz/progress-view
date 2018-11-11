@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.support.annotation.DimenRes
 import android.util.AttributeSet
 import android.view.View
 
@@ -11,6 +12,8 @@ import android.view.View
 /**
  * Created by Ramiz Raja on 11/11/2018.
  */
+fun Context.getDimension(@DimenRes dimen: Int) = resources.getDimension(dimen)
+
 class ProgressView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
@@ -19,9 +22,10 @@ class ProgressView @JvmOverloads constructor(
         private const val VIEW_PADDING = 0
     }
 
-    private val normalStrokeWidth = 2f
-    private val progressStrokeWidth = 16f
-    private var progress = 1f
+    private val normalStrokeWidth = context.getDimension(R.dimen.line_thickness_normal)
+    private val progressStrokeWidth = context.getDimension(R.dimen.line_thickness_progress)
+    private var progress = 0f
+    private var circleRadius = context.getDimension(R.dimen.circle_radius)
 
     private val normalPaint = Paint().apply {
         flags = Paint.ANTI_ALIAS_FLAG
@@ -40,21 +44,18 @@ class ProgressView @JvmOverloads constructor(
     private val circlePaint = Paint().apply {
         flags = Paint.ANTI_ALIAS_FLAG
         style = Paint.Style.STROKE
-        strokeWidth = 1f
+        strokeWidth = normalStrokeWidth
+        color = Color.GRAY
     }
 
     override fun onDraw(canvas: Canvas) {
         val viewCenterY = height.toFloat() / 2
 
-        //draw circles
-        val circleRadius = height.toFloat() / 4
-        val circleSize = circleRadius * 2
-
-        //draw first circle
+        //draw start circle
         val firstCircleCx = circleRadius + VIEW_PADDING
         canvas.drawCircle(firstCircleCx, viewCenterY, circleRadius, getFirstCirclePaint())
 
-        //draw second circle
+        //draw end circle
         val secondCircleCx = width - circleRadius - VIEW_PADDING
         canvas.drawCircle(secondCircleCx, viewCenterY, circleRadius, getSecondCirclePaint())
 
